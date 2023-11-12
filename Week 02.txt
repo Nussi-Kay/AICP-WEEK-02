@@ -1,0 +1,93 @@
+class TrainJourney:
+    def __init__(self, departure_time, return_time, total_seats, ticket_price):
+        self.departure_time = departure_time
+        self.return_time = return_time
+        self.total_seats = total_seats
+        self.ticket_price = ticket_price
+        self.available_seats = total_seats
+        self.total_passengers = 0
+        self.total_money_taken = 0
+
+    def book_ticket(self, num_passengers):
+        if self.available_seats >= num_passengers:
+            self.available_seats -= num_passengers
+            self.total_passengers += num_passengers
+            self.total_money_taken += num_passengers * self.ticket_price
+            return True
+        else:
+            return False
+
+def display_screen(journeys):
+    print("Train Times | Available Seats | Total Money Taken")
+    print("-----------------------------------------------")
+    for journey in journeys:
+        if journey.available_seats > 0:
+            print(f"{journey.departure_time} - {journey.return_time} | {journey.available_seats} seats available | ${journey.total_money_taken}")
+        else:
+            print(f"{journey.departure_time} - {journey.return_time} | Closed | ${journey.total_money_taken}")
+
+def purchase_tickets(journey, num_passengers, is_group=False):
+    if is_group:
+        num_free_tickets = num_passengers // 10
+        total_tickets_to_pay = num_passengers - num_free_tickets
+    else:
+        total_tickets_to_pay = num_passengers
+
+    if journey.book_ticket(total_tickets_to_pay):
+        total_price = total_tickets_to_pay * journey.ticket_price
+        journey.total_passengers += num_passengers
+        journey.total_money_taken += total_price
+        print(f"Tickets purchased successfully for {num_passengers} passengers on the {journey.departure_time} - {journey.return_time} journey.")
+        print(f"Total Price: ${total_price}")
+        print(f"Remaining Seats: {journey.available_seats}\n")
+    else:
+        print(f"Tickets not available for {num_passengers} passengers on the {journey.departure_time} - {journey.return_time} journey. Please choose another journey.\n")
+
+def end_of_day_summary(journeys):
+    print("\nEnd of the Day Summary\n")
+    print("Train Times | Total Passengers | Total Money Taken")
+    print("---------------------------------------------------")
+    most_passengers_journey = None
+    most_passengers_count = 0
+
+    total_day_passengers = 0
+    total_day_money_taken = 0
+
+    for journey in journeys:
+        print(f"{journey.departure_time} - {journey.return_time} | {journey.total_passengers} passengers | ${journey.total_money_taken}")
+
+        total_day_passengers += journey.total_passengers
+        total_day_money_taken += journey.total_money_taken
+
+        if journey.total_passengers > most_passengers_count:
+            most_passengers_count = journey.total_passengers
+            most_passengers_journey = journey
+
+    print("\nOverall Summary for the Day\n")
+    print(f"Total Passengers for the Day: {total_day_passengers} passengers")
+    print(f"Total Money Taken for the Day: ${total_day_money_taken}")
+
+    if most_passengers_journey:
+        print(f"\nJourney with the Most Passengers: {most_passengers_journey.departure_time} - {most_passengers_journey.return_time}")
+        print(f"Passengers Count: {most_passengers_count}")
+
+# Initialize train journeys
+journey_1 = TrainJourney("09:00", "10:00", 6 * 80, 25)
+journey_2 = TrainJourney("11:00", "12:00", 6 * 80, 25)
+journey_3 = TrainJourney("13:00", "14:00", 6 * 80, 25)
+journey_4 = TrainJourney("15:00", "16:00", 8 * 80, 25)
+
+# Display initial screen
+display_screen([journey_1, journey_2, journey_3, journey_4])
+
+# Example usage:
+purchase_tickets(journey_1, 15)
+purchase_tickets(journey_2, 25, is_group=True)
+purchase_tickets(journey_3, 10)
+
+# Display updated screen
+display_screen([journey_1, journey_2, journey_3, journey_4])
+
+# End of day summary
+end_of_day_summary([journey_1, journey_2, journey_3, journey_4])
+
